@@ -21,10 +21,10 @@ class Comic(object):
         links = table.findAll('a', attrs={'class': 'image image-thumbnail'})
         for link in links:
             self.add_cover(link.attrs['href'])
-        
+
     def add_cover(self, url):
         self.covers.append(Image(url))
 
-    def download_covers(self):
+    def download_covers(self, path):
         for cover in self.covers:
-            cover.download()
+            cover.download(path)
