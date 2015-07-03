@@ -2,6 +2,7 @@ from image import Image
 from urllib import request
 from bs4 import BeautifulSoup
 
+
 class Comic(object):
     """docstring for Comic"""
     def __init__(self, url):
@@ -16,7 +17,8 @@ class Comic(object):
         main = div.findAll('a')[0]
         self.add_cover(main.attrs['href'])
 
-        table = soup.findAll('table',
+        table = soup.findAll(
+            'table',
             attrs={'class': 'collapsible collapsed'})[0]
         links = table.findAll('a', attrs={'class': 'image image-thumbnail'})
         for link in links:

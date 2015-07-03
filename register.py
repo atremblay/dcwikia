@@ -4,12 +4,15 @@ from series import Series
 
 database_name = "dcwikia.db"
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-r', '--register', help='Register a new series in '
+    parser.add_argument(
+        '-r', '--register', help='Register a new series in '
         'the database. You must provide the url from dcwikia')
     parser.add_argument('-d', '--download', help='Download all new covers')
+
 
 def create_tables():
     conn = sqlite3.Connection(database_name)
@@ -33,12 +36,14 @@ def create_tables():
     for query in queries:
         cur.execute(query)
 
+
 def add_series(url):
     query = """INSERT INTO series VALUES(?)"""
     conn = sqlite3.Connection(database_name)
     cur = conn.cursor()
 
     cur.execute(query, url)
+
 
 def download():
     query = """SELECT serieurl FROM series"""
@@ -50,4 +55,3 @@ def download():
         series = Series(url[0])
         for comic in series.comics:
             comic.download_covers()
-
