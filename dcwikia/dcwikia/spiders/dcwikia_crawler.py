@@ -1,29 +1,24 @@
-import scrapy
+from scrapy.contrib.spiders import CrawlSpider, Rule
+from scrapy.contrib.linkextractors import LinkExtractor
 from bs4 import BeautifulSoup
-import urlparse
 
-class DCwikiaSpider(scrapy.Spider):
+
+class DCwikiaSpider(CrawlSpider):
     name = "dcwikia"
-    # allowed_domains = ["http://dc.wikia.com/"]
+    allowed_domains = ["dc.wikia.com"]
     start_urls = [
-        "http://dc.wikia.com/wiki/The_New_52",
-        "http://dc.wikia.com/wiki/Earth_2_Vol_1"
+        "http://dc.wikia.com/wiki/The_New_52"
     ]
-
-    def parse(self, response):
-        # print("url: {}".format(response.url))
-        self.parse_textless(response)
-
-        for href in response.xpath('//a/@href'):
-            url = urlparse.urljoin(response.url, href.extract())
-            print("\thref: {}".format(url))
-            # url = response.urljoin(href.extract())
-
-            yield scrapy.Request(url, callback=self.parse)
-
+    rules = (
+        Rule(
+            LinkExtractor(),
+            callback='parse_textless',
+            follow=True
+        ),
+    )
+    textless_images = set()
 
     def parse_textless(self, response):
-        print("url: {}".format(response.url))
         try:
             soup = BeautifulSoup(response.body)
             table = soup.find(
@@ -34,9 +29,11 @@ class DCwikiaSpider(scrapy.Spider):
                 div = table_row.findChild('div')
                 if "textless" in div.text.lower():
                     b = div.find('a')
-#                     textless_images.append(b.attrs['href'])
+#                     self.textless_images.append(b.attrs['href'])
                     filename = 'textless.txt'
-                    with open(filename, 'wb') as f:
+                    with open(filename, 'ab+') as f:
                         f.write(b.attrs['href'])
+                        f.write('\n')
+                        f.flush()
         except:
             pass
